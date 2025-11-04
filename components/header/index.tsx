@@ -2,13 +2,14 @@
 import Link from "next/link"
 import { House, Scissors,  Power, Menu, ChartLine, CalendarClock, UserPlus ,  ClockPlus } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useState,useRef } from "react";
 import { Context } from "../../Context";
 import Image from "next/image";
 
 export function Header({children}: {children: React.ReactNode  }){
    const [active, setActive] = useState<boolean>(false)
    const router = useRouter()
+   const modalRef = useRef<HTMLDivElement | null>(null)
    const { barberShop } = useContext(Context)
 
 
@@ -25,6 +26,12 @@ export function Header({children}: {children: React.ReactNode  }){
       }catch(err){
          console.log(err)
       }  
+   }
+
+   const handleClickOutside = (event: React.MouseEvent<HTMLDivElement>) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setActive(false);
+      }
    }
       
     return(
@@ -54,14 +61,17 @@ export function Header({children}: {children: React.ReactNode  }){
                   <Menu/>
                </button>
              </div>
-              <div className={` gap-3 fixed top-0 right-0 items-center bg-black flex flex-col transform transition-transform duration-300 ${active ? 'translate-x-0' : 'translate-x-full'} h-screen w-[120px] max-sm:w-[80px]` }>
+              <div 
+              onClick={handleClickOutside}
+               className={` gap-3 fixed top-0 right-0 items-center bg-transparent flex flex-col transform transition-transform duration-300 ${active ? 'translate-x-0' : 'translate-x-full'} h-screen w-full` }>
+                <div ref={modalRef} className={` gap-3 fixed top-0 right-0 items-center bg-black flex flex-col transform transition-transform duration-300 ${active ? 'translate-x-0' : 'translate-x-full'} h-screen w-[120px] max-sm:w-[80px]` }>
                       <button 
                       className="mt-5 hover:bg-[#00ff] p-2 rounded-full"
                       onClick={() => setActive(!active)}
                       >
                         <Menu/>
                      </button>
-                     <Link href="#">
+                     <Link href="/dashboard">
                         <p><House /></p>
                      </Link>
 
@@ -89,7 +99,7 @@ export function Header({children}: {children: React.ReactNode  }){
                         <Power  color='#eb0000'/>
                      </button>
                </div>
-         
+         </div>
            </div>
               
         </div>
